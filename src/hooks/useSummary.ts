@@ -10,8 +10,10 @@ export function useSummary() {
         acc.income += transaction.price
         acc.total += transaction.price
       } else {
-        acc.outcome -= transaction.price
-        acc.total -= transaction.price
+        const positiveValue =
+          transaction.price < 0 ? -1 * transaction.price : transaction.price
+        acc.outcome -= positiveValue
+        acc.total -= positiveValue
       }
       return acc
     },

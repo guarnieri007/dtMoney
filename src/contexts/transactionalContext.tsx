@@ -33,22 +33,28 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   async function fetchTransactions(query?: string) {
-    const response = await api.get('transactions', {
+    const response = await api.get<Transaction[]>('transactions', {
       params: {
         _sort: 'createdAt',
         _order: 'desc',
         q: query,
       },
     })
-    setTransactions(response.data)
+    const result = response.data.map((item) => {
+      return {
+        ...item,
+        price: item.price < 0 ? item.price * -1 : item.price,
+      }
+    })
+    setTransactions(result)
   }
 
   async function createTransaction(input: CreateTransactionInput) {
     const { description, type, category, price } = input
-    const response = await api.post('transactions', {
+    const response = await api.post<Transaction>('transactions', {
       description,
       type,
-      price,
+      price: price < 0 ? price * -1 : price,
       category,
       createdAt: new Date(),
     })
